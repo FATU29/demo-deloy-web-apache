@@ -1,4 +1,4 @@
-import { Todo, ApiResponse } from "../types/todo.types";
+import type { Todo, ApiResponse } from "../types/todo.types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
