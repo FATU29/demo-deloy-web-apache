@@ -3,15 +3,36 @@ import pool from "../config/database";
 import { CreateTodoDto, UpdateTodoDto } from "../models/todo.model";
 
 export class TodoController {
-  // Get all todos
+  // Get all todos with pagination
   async getAllTodos(req: Request, res: Response): Promise<void> {
     try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const offset = (page - 1) * limit;
+
+      // Get total count
+      const countResult = await pool.query("SELECT COUNT(*) FROM todos");
+      const total = parseInt(countResult.rows[0].count);
+
+      // Get paginated todos
       const result = await pool.query(
-        "SELECT * FROM todos ORDER BY created_at DESC"
+        "SELECT * FROM todos ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+        [limit, offset]
       );
+
+      const totalPages = Math.ceil(total / limit);
+      const hasMore = page < totalPages;
+
       res.json({
         success: true,
         data: result.rows,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasMore,
+        },
       });
     } catch (error) {
       console.error("Error fetching todos:", error);

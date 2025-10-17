@@ -2,13 +2,31 @@ import type { Todo, ApiResponse } from "../types/todo.types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+  message?: string;
+}
+
 export const todoApi = {
-  // Get all todos
-  async getAllTodos(): Promise<Todo[]> {
-    const response = await fetch(`${API_URL}/todos`);
-    const data: ApiResponse<Todo[]> = await response.json();
+  // Get all todos with pagination
+  async getAllTodos(
+    page: number = 1,
+    limit: number = 10
+  ): Promise<PaginatedResponse<Todo[]>> {
+    const response = await fetch(
+      `${API_URL}/todos?page=${page}&limit=${limit}`
+    );
+    const data: PaginatedResponse<Todo[]> = await response.json();
     if (!data.success) throw new Error(data.message || "Failed to fetch todos");
-    return data.data || [];
+    return data;
   },
 
   // Create a new todo
