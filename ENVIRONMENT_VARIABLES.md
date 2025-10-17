@@ -22,6 +22,7 @@ The application uses environment variables to configure both the backend and fro
 | `DB_NAME` | Database name | `todo_db` | `todo_db`, `todo_production` |
 | `DB_USER` | Database username | `todouser` | `todouser`, `postgres`, `admin` |
 | `DB_PASSWORD` | Database password | *(required)* | `your_secure_password` |
+| `DB_SSL` | Enable SSL for database connection | `false` | `true`, `false` (required for managed databases) |
 | `ALLOWED_ORIGINS` | CORS allowed origins (comma-separated) | `http://localhost:5173,http://localhost:3000` | `https://fatu.io.vn,https://www.fatu.io.vn` |
 
 ### Setup
@@ -48,6 +49,7 @@ The application uses environment variables to configure both the backend and fro
    DB_NAME=todo_db
    DB_USER=todouser
    DB_PASSWORD=your_actual_password
+   DB_SSL=false
    ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
    ```
 
@@ -62,18 +64,20 @@ DB_PORT=5432
 DB_NAME=todo_db
 DB_USER=todouser
 DB_PASSWORD=postgres
+DB_SSL=false
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
-#### Production
+#### Production (Managed Database like DigitalOcean)
 ```env
 NODE_ENV=production
 PORT=3000
-DB_HOST=10.xxx.xxx.xxx    # Database server PRIVATE IP
-DB_PORT=5432
-DB_NAME=todo_db
-DB_USER=todouser
+DB_HOST=your-db-host.db.ondigitalocean.com    # Or use PRIVATE IP
+DB_PORT=25060
+DB_NAME=defaultdb
+DB_USER=doadmin
 DB_PASSWORD=very_secure_random_password_123
+DB_SSL=true    # REQUIRED for managed databases
 ALLOWED_ORIGINS=https://fatu.io.vn,https://www.fatu.io.vn
 ```
 
@@ -86,6 +90,7 @@ DB_PORT=5432
 DB_NAME=todo_db
 DB_USER=todouser
 DB_PASSWORD=postgres
+DB_SSL=false
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
@@ -328,6 +333,7 @@ echo "Host: $DB_HOST"
 echo "Port: $DB_PORT"
 echo "Database: $DB_NAME"
 echo "User: $DB_USER"
+echo "SSL: $DB_SSL"
 ```
 
 **Common issues:**
@@ -335,6 +341,34 @@ echo "User: $DB_USER"
 - Wrong `DB_PASSWORD`
 - Database doesn't exist
 - PostgreSQL not running
+- **Missing SSL configuration** (see below)
+
+### "no encryption" or SSL error
+
+**Error message:**
+```
+error: no pg_hba.conf entry for host "xxx.xxx.xxx.xxx", user "xxx", database "xxx", no encryption
+```
+
+**Solution:**
+This error occurs when connecting to managed databases (like DigitalOcean, AWS RDS, Azure Database) that require SSL encryption.
+
+**Add to your `.env` file:**
+```env
+DB_SSL=true
+```
+
+**Then restart your application:**
+```bash
+npm run dev
+# or in production
+npm start
+```
+
+**Why this happens:**
+- Managed databases require encrypted connections for security
+- Your local PostgreSQL doesn't require SSL by default
+- Always use `DB_SSL=true` for cloud databases
 
 ### Frontend can't connect to backend
 
@@ -397,18 +431,20 @@ DB_PORT=5432
 DB_NAME=todo_db
 DB_USER=todouser
 DB_PASSWORD=your_password_here
+DB_SSL=false
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
-#### Production
+#### Production (Managed Database)
 ```env
 NODE_ENV=production
 PORT=3000
-DB_HOST=10.xxx.xxx.xxx    # Database server PRIVATE IP (fill in later)
-DB_PORT=5432
-DB_NAME=todo_db
-DB_USER=todouser
+DB_HOST=your-db-host.db.ondigitalocean.com    # Or use PRIVATE IP
+DB_PORT=25060    # Check your database port
+DB_NAME=defaultdb
+DB_USER=doadmin
 DB_PASSWORD=your_db_password_here    # Set strong password
+DB_SSL=true    # REQUIRED for managed databases like DigitalOcean
 ALLOWED_ORIGINS=https://fatu.io.vn,https://www.fatu.io.vn
 ```
 

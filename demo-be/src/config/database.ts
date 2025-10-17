@@ -9,6 +9,12 @@ const pool = new Pool({
   database: process.env.DB_NAME || "todo_db",
   user: process.env.DB_USER || "todouser",
   password: process.env.DB_PASSWORD,
+  ssl:
+    process.env.DB_SSL === "true"
+      ? {
+          rejectUnauthorized: false, // For managed databases like DigitalOcean
+        }
+      : false,
 });
 
 // Test the connection
