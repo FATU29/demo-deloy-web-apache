@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import todoRoutes from "./routes/todo.routes";
 import pool from "./config/database";
+import { initializeDatabase } from "./utils/db-init";
 
 dotenv.config();
 
@@ -75,10 +76,23 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+// Initialize database and start server
+async function startServer() {
+  try {
+    console.log("🔌 Initializing database...");
+    await initializeDatabase();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();
 
 // Graceful shutdown
 process.on("SIGTERM", () => {

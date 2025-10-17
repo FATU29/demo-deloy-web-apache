@@ -35,6 +35,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000
+      AUTO_SEED: "true"
+      FORCE_SEED: "false"
     ports:
       - "3000:3000"
     depends_on:

@@ -15,7 +15,19 @@ docker-compose up
 # Backend API: http://localhost:3000
 ```
 
-That's it! The database will be automatically initialized with sample data.
+That's it! The backend will automatically:
+- ✅ Create database tables and indexes
+- ✅ Seed with 50 mock todos for testing
+
+You'll see:
+```
+🔌 Initializing database...
+🔄 Running database migrations...
+✅ Database migrations completed successfully!
+🌱 Starting database seeding...
+✅ Successfully seeded 50 todos!
+🚀 Server is running on http://localhost:3000
+```
 
 To stop:
 ```bash
@@ -47,10 +59,9 @@ DB_PASSWORD=your_actual_password
 ```bash
 # Create database
 psql -U postgres -c "CREATE DATABASE todo_db;"
-
-# Initialize schema
-psql -U postgres -d todo_db -f demo-be/database/init.sql
 ```
+
+**Note:** Tables and sample data will be created automatically when backend starts!
 
 ### 4. Start Backend
 
@@ -60,6 +71,10 @@ npm run dev
 ```
 
 Backend runs on http://localhost:3000
+
+The backend will automatically:
+- ✅ Create tables and indexes
+- ✅ Insert 50 mock todos (configurable via `AUTO_SEED` env var)
 
 ### 5. Start Frontend (in new terminal)
 
@@ -101,9 +116,10 @@ Frontend runs on http://localhost:5173
 ```bash
 # Backend
 cd demo-be
-npm run dev      # Development
+npm run dev      # Development (auto-migrates & seeds)
 npm run build    # Build for production
 npm start        # Run production build
+npm run seed     # Manually seed database
 
 # Frontend
 cd demo-fe
@@ -116,6 +132,7 @@ docker-compose up              # Start all services
 docker-compose down            # Stop all services
 docker-compose logs -f         # View logs
 docker-compose restart         # Restart services
+docker-compose down -v         # Remove volumes (reset database)
 ```
 
 ## Demo Credentials (Docker)

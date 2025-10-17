@@ -6,6 +6,8 @@ A full-stack todo list application with React frontend, Express backend, and Pos
 
 - ✅ **Full CRUD Operations**: Create, Read, Update, Delete todos
 - ✅ **PostgreSQL Database**: Reliable data persistence
+- ✅ **Auto-Migration**: Database tables created automatically on startup
+- ✅ **Auto-Seeding**: Optional 50 mock todos for instant testing
 - ✅ **RESTful API**: Clean Express.js backend
 - ✅ **Modern React UI**: Built with TypeScript and Tailwind CSS v4
 - ✅ **Responsive Design**: Works on mobile, tablet, and desktop
@@ -67,14 +69,8 @@ cp .env.example .env
 ### 3. Setup Database
 
 ```bash
-# Connect to PostgreSQL
-psql -U postgres
-
-# Create database
-CREATE DATABASE todo_db;
-
-# Exit and run init script
-psql -U postgres -d todo_db -f database/init.sql
+# Create database only - tables will be created automatically!
+psql -U postgres -c "CREATE DATABASE todo_db;"
 ```
 
 ### 4. Start Backend
@@ -82,6 +78,18 @@ psql -U postgres -d todo_db -f database/init.sql
 ```bash
 npm run dev
 # Backend runs on http://localhost:3000
+```
+
+The backend will automatically:
+- ✅ Create all database tables and indexes
+- ✅ Insert 50 mock todos (disable with `AUTO_SEED=false`)
+
+You'll see:
+```
+🔌 Initializing database...
+✅ Database migrations completed successfully!
+✅ Successfully seeded 50 todos!
+🚀 Server is running on http://localhost:3000
 ```
 
 ### 5. Setup Frontend
