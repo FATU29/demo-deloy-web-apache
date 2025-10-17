@@ -1,151 +1,60 @@
-import { useState, useEffect } from "react";
-import type { Todo } from "./types/todo.types";
-import { todoApi } from "./services/api";
-import TodoForm from "./components/TodoForm";
-import TodoList from "./components/TodoList";
-import FilterBar from "./components/FilterBar";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navigation from "./components/Navigation";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Load todos on mount
-  useEffect(() => {
-    loadTodos();
-  }, []);
-
-  const loadTodos = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const data = await todoApi.getAllTodos();
-      setTodos(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load todos");
-      console.error("Error loading todos:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCreateTodo = async (title: string, description: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const newTodo = await todoApi.createTodo(title, description);
-      setTodos([newTodo, ...todos]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create todo");
-      console.error("Error creating todo:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleToggleTodo = async (id: number) => {
-    try {
-      const updatedTodo = await todoApi.toggleTodo(id);
-      setTodos(todos.map((todo) => (todo.id === id ? updatedTodo : todo)));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to toggle todo");
-      console.error("Error toggling todo:", err);
-    }
-  };
-
-  const handleUpdateTodo = async (
-    id: number,
-    title: string,
-    description: string
-  ) => {
-    try {
-      const updatedTodo = await todoApi.updateTodo(id, { title, description });
-      setTodos(todos.map((todo) => (todo.id === id ? updatedTodo : todo)));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update todo");
-      console.error("Error updating todo:", err);
-    }
-  };
-
-  const handleDeleteTodo = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this task?")) return;
-
-    try {
-      await todoApi.deleteTodo(id);
-      setTodos(todos.filter((todo) => todo.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete todo");
-      console.error("Error deleting todo:", err);
-    }
-  };
-
-  const activeCount = todos.filter((todo) => !todo.completed).length;
-  const completedCount = todos.filter((todo) => todo.completed).length;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-2">
-            📝 Todo List App
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Organize your tasks efficiently
-          </p>
-        </header>
+    <BrowserRouter>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between">
-            <span>{error}</span>
-            <button
-              onClick={() => setError(null)}
-              className="text-red-700 hover:text-red-900"
-            >
-              ✕
-            </button>
-          </div>
-        )}
+        <div className="container mx-auto px-4 py-6 sm:py-8 lg:py-12 max-w-7xl relative z-10">
+          {/* Header */}
+          <header className="text-center mb-8 sm:mb-10 lg:mb-12 animate-fade-in">
+            <div className="inline-block">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-3 sm:mb-4">
+                ✨ My Todo List
+              </h1>
+              <div className="h-1 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-full"></div>
+            </div>
+            <p className="text-gray-600 text-base sm:text-lg lg:text-xl mt-4 max-w-2xl mx-auto">
+              Stay organized and productive with your personal task manager
+            </p>
+          </header>
 
-        {/* Loading Indicator */}
-        {isLoading && todos.length === 0 && (
-          <div className="text-center py-12">
-            <div className="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-gray-600 mt-4">Loading tasks...</p>
-          </div>
-        )}
+          {/* Navigation */}
+          <Navigation />
 
-        {/* Main Content */}
-        {!isLoading || todos.length > 0 ? (
-          <>
-            <TodoForm onSubmit={handleCreateTodo} isLoading={isLoading} />
+          {/* Page Content */}
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
 
-            <FilterBar
-              filter={filter}
-              onFilterChange={setFilter}
-              totalCount={todos.length}
-              activeCount={activeCount}
-              completedCount={completedCount}
-            />
-
-            <TodoList
-              todos={todos}
-              filter={filter}
-              onToggle={handleToggleTodo}
-              onUpdate={handleUpdateTodo}
-              onDelete={handleDeleteTodo}
-            />
-          </>
-        ) : null}
-
-        {/* Footer */}
-        <footer className="mt-12 text-center text-gray-500 text-sm">
-          <p>Built with React + TypeScript + PostgreSQL</p>
-        </footer>
+          {/* Footer */}
+          <footer className="mt-12 sm:mt-16 text-center text-gray-500 text-xs sm:text-sm">
+            <div className="bg-white/40 backdrop-blur-sm rounded-lg py-4 px-6">
+              <p className="flex items-center justify-center gap-2 flex-wrap">
+                <span>Built with</span>
+                <span className="font-semibold text-blue-600">React</span>
+                <span>•</span>
+                <span className="font-semibold text-blue-600">TypeScript</span>
+                <span>•</span>
+                <span className="font-semibold text-blue-600">PostgreSQL</span>
+              </p>
+            </div>
+          </footer>
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 

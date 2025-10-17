@@ -15,12 +15,14 @@ The application uses environment variables to configure both the backend and fro
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
+| `NODE_ENV` | Application environment | `development` | `development`, `production`, `staging` |
 | `PORT` | Port number for the Express server | `3000` | `3000`, `8080`, `5000` |
-| `DB_HOST` | PostgreSQL server hostname | `localhost` | `localhost`, `db.example.com` |
+| `DB_HOST` | PostgreSQL server hostname | `localhost` | `localhost`, `10.xxx.xxx.xxx`, `db.example.com` |
 | `DB_PORT` | PostgreSQL server port | `5432` | `5432` |
 | `DB_NAME` | Database name | `todo_db` | `todo_db`, `todo_production` |
-| `DB_USER` | Database username | `postgres` | `postgres`, `admin` |
-| `DB_PASSWORD` | Database password | `postgres` | `your_secure_password` |
+| `DB_USER` | Database username | `todouser` | `todouser`, `postgres`, `admin` |
+| `DB_PASSWORD` | Database password | *(required)* | `your_secure_password` |
+| `ALLOWED_ORIGINS` | CORS allowed origins (comma-separated) | `http://localhost:5173,http://localhost:3000` | `https://fatu.io.vn,https://www.fatu.io.vn` |
 
 ### Setup
 
@@ -39,44 +41,52 @@ The application uses environment variables to configure both the backend and fro
 
 3. **Update with your values:**
    ```env
+   NODE_ENV=development
    PORT=3000
    DB_HOST=localhost
    DB_PORT=5432
    DB_NAME=todo_db
-   DB_USER=postgres
+   DB_USER=todouser
    DB_PASSWORD=your_actual_password
+   ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
    ```
 
 ### Environment Examples
 
 #### Development
 ```env
+NODE_ENV=development
 PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=todo_db
-DB_USER=postgres
+DB_USER=todouser
 DB_PASSWORD=postgres
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
 #### Production
 ```env
+NODE_ENV=production
 PORT=3000
-DB_HOST=production-db.example.com
+DB_HOST=10.xxx.xxx.xxx    # Database server PRIVATE IP
 DB_PORT=5432
-DB_NAME=todo_db_production
-DB_USER=todo_app_user
+DB_NAME=todo_db
+DB_USER=todouser
 DB_PASSWORD=very_secure_random_password_123
+ALLOWED_ORIGINS=https://fatu.io.vn,https://www.fatu.io.vn
 ```
 
 #### Docker
 ```env
+NODE_ENV=development
 PORT=3000
 DB_HOST=postgres
 DB_PORT=5432
 DB_NAME=todo_db
-DB_USER=postgres
+DB_USER=todouser
 DB_PASSWORD=postgres
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
 ## 🎨 Frontend Environment Variables
@@ -129,7 +139,7 @@ VITE_API_URL=https://api-staging.yourdomain.com/api
 
 #### Production
 ```env
-VITE_API_URL=https://api.yourdomain.com/api
+VITE_API_URL=https://fatu.io.vn/api
 ```
 
 #### Docker Development
@@ -377,18 +387,41 @@ API_URL=http://localhost:3000/api  ❌
 ## 🎯 Quick Reference
 
 ### Complete Backend .env Template
+
+#### Development
 ```env
+NODE_ENV=development
 PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=todo_db
-DB_USER=postgres
+DB_USER=todouser
 DB_PASSWORD=your_password_here
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+```
+
+#### Production
+```env
+NODE_ENV=production
+PORT=3000
+DB_HOST=10.xxx.xxx.xxx    # Database server PRIVATE IP (fill in later)
+DB_PORT=5432
+DB_NAME=todo_db
+DB_USER=todouser
+DB_PASSWORD=your_db_password_here    # Set strong password
+ALLOWED_ORIGINS=https://fatu.io.vn,https://www.fatu.io.vn
 ```
 
 ### Complete Frontend .env Template
+
+#### Development
 ```env
 VITE_API_URL=http://localhost:3000/api
+```
+
+#### Production
+```env
+VITE_API_URL=https://fatu.io.vn/api
 ```
 
 ---
